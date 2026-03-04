@@ -2,107 +2,63 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>TEAFUL STUDIO</title>
+<title>TEAFUL Studio</title>
 
 <style>
 
 body{
-margin:0;
 font-family:Arial;
-background:#f3f3f3;
-}
-
-.header{
+background:#f5f5f5;
+margin:0;
 text-align:center;
-padding:25px;
-background:white;
-box-shadow:0 2px 10px rgba(0,0,0,0.05);
 }
 
-.logo{
-font-size:24px;
+h1{
 letter-spacing:6px;
+margin-top:30px;
 }
 
 .subtitle{
-color:#888;
-font-size:12px;
-margin-top:6px;
+color:#777;
+margin-bottom:30px;
 }
 
 .tabs{
 display:flex;
 justify-content:center;
 gap:40px;
-margin-top:20px;
+font-size:18px;
+margin-bottom:20px;
 }
 
-.tab{
+.tabs span{
+padding:10px;
 cursor:pointer;
-padding-bottom:6px;
 }
 
-.tab.active{
-border-bottom:2px solid black;
-}
-
-.section{
-padding:20px;
-}
-
-.category{
+.tabs .active{
+border-bottom:3px solid black;
 font-weight:bold;
-margin:20px 0 10px;
 }
 
 .templates{
 display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:15px;
+grid-template-columns:repeat(3,200px);
+gap:20px;
+justify-content:center;
+margin-top:30px;
 }
 
-.card{
+.template{
 background:white;
-border-radius:14px;
+border-radius:10px;
 padding:20px;
-text-align:center;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
 cursor:pointer;
-transition:0.2s;
 }
 
-.card:hover{
-transform:scale(1.05);
-}
-
-.card img{
-width:70px;
-}
-
-.createBtn{
-margin:30px auto;
-display:block;
-background:black;
-color:white;
-padding:14px 30px;
-border-radius:8px;
-border:none;
-}
-
-#createPage{
-display:none;
-text-align:center;
-padding:20px;
-}
-
-canvas{
-border:2px solid #333;
-border-radius:12px;
-background:white;
-}
-
-.toolbar{
-margin-top:10px;
+.template img{
+width:80px;
 }
 
 button{
@@ -110,393 +66,247 @@ background:black;
 color:white;
 border:none;
 padding:8px 14px;
-margin:4px;
 border-radius:6px;
+cursor:pointer;
+}
+
+#canvas{
+border:2px solid #333;
+border-radius:10px;
+background:white;
+}
+
+.controls{
+margin-top:15px;
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+}
+
+#backBtn{
+margin-bottom:20px;
 }
 
 </style>
 </head>
 
-
 <body>
 
-
-<div class="header">
-
-<div class="logo">TEAFUL</div>
+<h1>TEAFUL</h1>
 <div class="subtitle">A CUP FULL OF HAPPINESS</div>
 
 <div class="tabs">
-
-<div class="tab active">推荐模板</div>
-<div class="tab" onclick="openCreate()">灵感创作</div>
-
+<span id="tab-template" class="active">推荐模板</span>
+<span id="tab-create">灵感创作</span>
 </div>
 
-</div>
+<!-- 模板页面 -->
 
-
-
-<div id="templatePage" class="section">
-
-
-<div class="category">Party</div>
+<div id="templatePage">
 
 <div class="templates">
 
-<div class="card" onclick="loadTemplate('party.png')">
-<img src="party.png">
+<div class="template" onclick="printTemplate('cry.png')">
+< img src="cry.png">
 </div>
 
-<div class="card" onclick="loadTemplate('cake.png')">
-<img src="cake.png">
+<div class="template" onclick="printTemplate('planet.png')">
+< img src="planet.png">
 </div>
 
-<div class="card" onclick="loadTemplate('hat.png')">
-<img src="hat.png">
+<div class="template" onclick="printTemplate('party.png')">
+< img src="party.png">
 </div>
 
+<div class="template" onclick="printTemplate('hat.png')">
+< img src="hat.png">
 </div>
 
-
-<div class="category">Emotion</div>
-
-<div class="templates">
-
-<div class="card" onclick="loadTemplate('cry.png')">
-<img src="cry.png">
-</div>
-
-<div class="card" onclick="loadTemplate('planet.png')">
-<img src="planet.png">
+<div class="template" onclick="printTemplate('cake.png')">
+< img src="cake.png">
 </div>
 
 </div>
 
+<br><br>
 
-<button class="createBtn" onclick="openCreate()">Create Your Sticker</button>
+<button onclick="openCreate()">Create Your Sticker</button>
 
 </div>
 
 
+<!-- 创作页面 -->
 
-<div id="createPage">
+<div id="createPage" style="display:none">
+
+<button id="backBtn">← Back</button>
 
 <h3>Create Sticker</h3>
 
-<canvas id="canvas" width="320" height="320"></canvas>
+<canvas id="canvas" width="400" height="400"></canvas>
 
-
-<div class="toolbar">
+<div class="controls">
 
 <button onclick="mode='draw'">Draw</button>
 <button onclick="mode='erase'">Eraser</button>
 <button onclick="mode='move'">Move</button>
-<button onclick="deleteSticker()">Delete</button>
 <button onclick="undo()">Undo</button>
 <button onclick="clearCanvas()">Clear</button>
-<button onclick="printA4()">Print</button>
-
-<br>
+<button onclick="printCanvas()">Print</button>
 
 <input type="file" id="upload">
 
+</div>
+
 <br>
 
-<label>Brush</label>
-<input type="range" id="size" min="2" max="30" value="6">
+Brush
+<input type="range" id="brush" min="1" max="30" value="5">
 
 </div>
-
-</div>
-
 
 
 <script>
 
-let canvas=document.getElementById("canvas")
-let ctx=canvas.getContext("2d")
+const tabTemplate = document.getElementById("tab-template")
+const tabCreate = document.getElementById("tab-create")
 
-let mode="draw"
-let drawing=false
-let brushSize=6
+const templatePage = document.getElementById("templatePage")
+const createPage = document.getElementById("createPage")
 
-let stickers=[]
-let history=[]
-let selected=null
+tabTemplate.onclick=()=>{
+templatePage.style.display="block"
+createPage.style.display="none"
 
-document.getElementById("size").oninput=e=>{
-brushSize=e.target.value
+tabTemplate.classList.add("active")
+tabCreate.classList.remove("active")
 }
 
+tabCreate.onclick=()=>{
+templatePage.style.display="none"
+createPage.style.display="block"
 
-canvas.addEventListener("mousedown",start)
-canvas.addEventListener("mousemove",move)
-canvas.addEventListener("mouseup",end)
-
-canvas.addEventListener("touchstart",e=>{
-start(e.touches[0])
-})
-
-canvas.addEventListener("touchmove",e=>{
-e.preventDefault()
-move(e.touches[0])
-})
-
-canvas.addEventListener("touchend",end)
-
-
-
-function start(e){
-
-let rect=canvas.getBoundingClientRect()
-let x=e.clientX-rect.left
-let y=e.clientY-rect.top
-
-drawing=true
-
-if(mode=="move"){
-
-selected=null
-
-stickers.forEach(s=>{
-if(x>s.x && x<s.x+s.w && y>s.y && y<s.y+s.h){
-selected=s
+tabCreate.classList.add("active")
+tabTemplate.classList.remove("active")
 }
-})
-
-}
-
-ctx.beginPath()
-ctx.moveTo(x,y)
-
-}
-
-
-function move(e){
-
-let rect=canvas.getBoundingClientRect()
-let x=e.clientX-rect.left
-let y=e.clientY-rect.top
-
-
-if(mode=="draw" && drawing){
-
-ctx.lineWidth=brushSize
-ctx.globalCompositeOperation="source-over"
-
-ctx.lineTo(x,y)
-ctx.stroke()
-
-}
-
-
-if(mode=="erase" && drawing){
-
-ctx.lineWidth=brushSize
-ctx.globalCompositeOperation="destination-out"
-
-ctx.lineTo(x,y)
-ctx.stroke()
-
-}
-
-
-if(mode=="move" && selected){
-
-selected.x=x-selected.w/2
-selected.y=y-selected.h/2
-
-render()
-
-}
-
-}
-
-
-function end(){
-drawing=false
-ctx.beginPath()
-}
-
-
-
-function render(){
-
-ctx.clearRect(0,0,canvas.width,canvas.height)
-
-stickers.forEach(s=>{
-ctx.drawImage(s.img,s.x,s.y,s.w,s.h)
-})
-
-}
-
-
-
-function loadTemplate(img){
-
-openCreate()
-
-let image=new Image()
-
-image.onload=function(){
-
-stickers.push({
-img:image,
-x:80,
-y:80,
-w:160,
-h:160
-})
-
-render()
-
-}
-
-image.src=img
-
-}
-
-
-
-function deleteSticker(){
-
-if(selected){
-
-stickers=stickers.filter(s=>s!=selected)
-selected=null
-render()
-
-}
-
-}
-
-
-
-function undo(){
-
-ctx.clearRect(0,0,canvas.width,canvas.height)
-
-}
-
-
-
-function clearCanvas(){
-
-stickers=[]
-ctx.clearRect(0,0,canvas.width,canvas.height)
-
-}
-
-
-
-document.getElementById("upload").onchange=e=>{
-
-let file=e.target.files[0]
-
-let reader=new FileReader()
-
-reader.onload=function(ev){
-
-let img=new Image()
-
-img.onload=function(){
-
-stickers.push({
-img:img,
-x:80,
-y:80,
-w:160,
-h:160
-})
-
-render()
-
-}
-
-img.src=ev.target.result
-
-}
-
-reader.readAsDataURL(file)
-
-}
-
-
-
-canvas.addEventListener("wheel",e=>{
-
-if(selected){
-
-let scale=e.deltaY<0?1.1:0.9
-
-selected.w*=scale
-selected.h*=scale
-
-render()
-
-}
-
-})
-
-
 
 function openCreate(){
+tabCreate.click()
+}
 
-document.getElementById("templatePage").style.display="none"
-document.getElementById("createPage").style.display="block"
+document.getElementById("backBtn").onclick=()=>{
+tabTemplate.click()
+}
+
+const canvas=document.getElementById("canvas")
+const ctx=canvas.getContext("2d")
+
+let drawing=false
+let mode="draw"
+
+let brush=document.getElementById("brush")
+
+canvas.onmousedown=(e)=>{
+drawing=true
+ctx.beginPath()
+ctx.moveTo(e.offsetX,e.offsetY)
+}
+
+canvas.onmousemove=(e)=>{
+if(!drawing)return
+
+ctx.lineWidth=brush.value
+
+if(mode==="draw"){
+ctx.globalCompositeOperation="source-over"
+}
+
+if(mode==="erase"){
+ctx.globalCompositeOperation="destination-out"
+}
+
+ctx.lineTo(e.offsetX,e.offsetY)
+ctx.stroke()
+}
+
+canvas.onmouseup=()=>{
+drawing=false
+saveState()
+}
+
+let history=[]
+
+function saveState(){
+history.push(canvas.toDataURL())
+}
+
+function undo(){
+if(history.length==0)return
+
+let img=new Image()
+img.src=history.pop()
+
+img.onload=()=>{
+ctx.clearRect(0,0,canvas.width,canvas.height)
+ctx.drawImage(img,0,0)
+}
+}
+
+function clearCanvas(){
+ctx.clearRect(0,0,canvas.width,canvas.height)
+}
+
+document.getElementById("upload").onchange=(e)=>{
+
+const file=e.target.files[0]
+
+const img=new Image()
+
+img.src=URL.createObjectURL(file)
+
+img.onload=()=>{
+ctx.drawImage(img,100,100,200,200)
+saveState()
+}
 
 }
 
+function printCanvas(){
 
+const data=canvas.toDataURL("image/png")
 
-function printA4(){
+const win=window.open("")
 
-let data=canvas.toDataURL()
-
-let w=window.open()
-
-w.document.write(`
-
-<style>
-
-body{
-display:flex;
-flex-wrap:wrap;
-padding:1cm;
-}
-
-.sticker{
-width:8cm;
-height:8cm;
-margin:0.5cm;
-}
-
-img{
-width:100%;
-}
-
-</style>
-
-<div class="sticker">< img src="${data}"></div>
-<div class="sticker">< img src="${data}"></div>
-<div class="sticker">< img src="${data}"></div>
-<div class="sticker">< img src="${data}"></div>
-<div class="sticker">< img src="${data}"></div>
-<div class="sticker">< img src="${data}"></div>
-<div class="sticker">< img src="${data}"></div>
-<div class="sticker">< img src="${data}"></div>
-<div class="sticker">< img src="${data}"></div>
-
+win.document.write(`
+<html>
+<body style="display:flex;justify-content:center;align-items:center;height:100vh;">
+< img src="${data}" style="width:80mm">
+<script>
+window.onload=function(){window.print()}
+</script>
+</body>
+</html>
 `)
+}
 
-w.print()
+function printTemplate(src){
 
+const win=window.open("")
+
+win.document.write(`
+<html>
+<body style="display:flex;justify-content:center;align-items:center;height:100vh;">
+< img src="${src}" style="width:80mm">
+<script>
+window.onload=function(){window.print()}
+</script>
+</body>
+</html>
+`)
 }
 
 </script>
 
-
 </body>
 </html>
-
