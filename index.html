@@ -2,191 +2,223 @@
 <html>
 
 <head>
-
 <meta charset="utf-8">
-
-<title>Teaful</title>
+<title>Teaful Studio</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Helvetica, Arial, sans-serif;
-background:#f3f1f6;
+font-family:Helvetica;
+background:#f6f6f6;
+}
+
+/* 顶部 */
+
+.header{
+text-align:center;
+padding:25px;
+background:white;
+font-size:28px;
+letter-spacing:6px;
+}
+
+/* tabs */
+
+.tabs{
+display:flex;
+justify-content:center;
+background:white;
+border-bottom:1px solid #ddd;
+}
+
+.tab{
+padding:14px 25px;
+cursor:pointer;
+}
+
+.active{
+border-bottom:3px solid black;
+}
+
+/* 分类 */
+
+.category{
+display:flex;
+gap:10px;
+padding:15px;
+}
+
+.tag{
+background:#eee;
+padding:8px 15px;
+border-radius:20px;
+font-size:13px;
+}
+
+/* 模板 */
+
+.templates{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px;
+padding:15px;
+}
+
+.card{
+background:white;
+height:140px;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:14px;
+}
+
+/* 创建按钮 */
+
+.create{
+position:fixed;
+bottom:25px;
+left:50%;
+transform:translateX(-50%);
+background:black;
+color:white;
+padding:14px 28px;
+border-radius:30px;
+cursor:pointer;
+}
+
+/* 编辑器 */
+
+#editor{
+display:none;
+padding:20px;
 text-align:center;
 }
 
-/* 启动页 */
-
-#loading{
-
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#f3f1f6;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-z-index:9999;
-
-}
-
-/* 卡通图 */
-
-#startup{
-
-width:220px;
-animation:float 2s ease;
-
-}
-
-/* Logo */
-
-#logo{
-
-margin-top:25px;
-
-}
-
-.logo-text{
-
-font-size:44px;
-letter-spacing:8px;
-font-weight:600;
-
-}
-
-.logo-sub{
-
-font-size:12px;
-letter-spacing:4px;
-margin-top:8px;
-color:#666;
-
-}
-
-/* 动画 */
-
-@keyframes float{
-
-0%{
-transform:translateY(20px);
-opacity:0;
-}
-
-100%{
-transform:translateY(0);
-opacity:1;
-}
-
-}
-
-@keyframes fade{
-
-0%{opacity:0}
-
-100%{opacity:1}
-
-}
-
-/* 主页面 */
-
-#main{
-
-display:none;
-padding-top:20px;
-
-}
-
 canvas{
-
-background:white;
 border:2px solid black;
 border-radius:10px;
+background:white;
+}
 
+/* 工具栏 */
+
+.toolbar{
+margin-top:15px;
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
 }
 
 button{
-
-padding:10px 18px;
-margin:6px;
+padding:10px 16px;
 border:none;
 background:black;
 color:white;
 border-radius:6px;
 cursor:pointer;
-
 }
 
 button:hover{
-
 background:#333;
+}
 
+.sticker{
+font-size:22px;
+background:white;
+border:1px solid #ccc;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<!-- 启动页 -->
+<div class="header">TEAFUL</div>
 
-<div id="loading">
+<div class="tabs">
 
-< img src="startup.png" id="startup">
-
-<div id="logo">
-
-<div class="logo-text">TEAFUL</div>
-
-<div class="logo-sub">A CUP FULL OF HAPPINESS</div>
+<div class="tab active">Templates</div>
+<div class="tab">Create</div>
 
 </div>
 
+<div class="category">
+
+<div class="tag">Love</div>
+<div class="tag">Birthday</div>
+<div class="tag">Friends</div>
+<div class="tag">Daily</div>
+
 </div>
 
-<!-- 主页面 -->
+<div class="templates">
 
-<div id="main">
+<div class="card">Love Cup</div>
+<div class="card">Birthday Cup</div>
+<div class="card">Best Friend</div>
+<div class="card">Lucky Day</div>
 
-<h2>Design Your Teaful Cup</h2>
+</div>
+
+<div class="create" onclick="openEditor()">
+
+Create Sticker
+
+</div>
+
+<div id="editor">
+
+<h2>Create Your Cup</h2>
 
 <canvas id="canvas" width="320" height="320"></canvas>
 
-<br>
+<div class="toolbar">
 
-<input id="textInput" placeholder="Type text">
+<input id="textInput" placeholder="Text">
 
-<br>
-
-<button onclick="addText()">Add Text</button>
+<button onclick="addText()">Text</button>
 
 <button onclick="clearCanvas()">Clear</button>
 
-<button onclick="downloadImage()">Save Sticker</button>
+<button onclick="downloadImage()">Save</button>
+
+</div>
+
+<div class="toolbar">
+
+<button class="sticker" onclick="addSticker('⭐')">⭐</button>
+<button class="sticker" onclick="addSticker('❤️')">❤️</button>
+<button class="sticker" onclick="addSticker('🍵')">🍵</button>
+<button class="sticker" onclick="addSticker('🎉')">🎉</button>
+<button class="sticker" onclick="addSticker('😊')">😊</button>
+
+</div>
+
+<div class="toolbar">
+
+<input type="file" id="upload">
+
+</div>
 
 </div>
 
 <script>
 
-/* 启动页3秒 */
+function openEditor(){
 
-setTimeout(function(){
+document.querySelector(".templates").style.display="none"
+document.querySelector(".create").style.display="none"
+document.getElementById("editor").style.display="block"
 
-document.getElementById("loading").style.display="none"
+}
 
-document.getElementById("main").style.display="block"
-
-},3000)
-
-/* 画图 */
+/* canvas */
 
 const canvas=document.getElementById("canvas")
-
 const ctx=canvas.getContext("2d")
 
 let drawing=false
@@ -194,11 +226,8 @@ let drawing=false
 canvas.onmousedown=()=>drawing=true
 
 canvas.onmouseup=()=>{
-
 drawing=false
-
 ctx.beginPath()
-
 }
 
 canvas.onmousemove=function(e){
@@ -209,11 +238,9 @@ ctx.lineWidth=3
 ctx.lineCap="round"
 
 ctx.lineTo(e.offsetX,e.offsetY)
-
 ctx.stroke()
 
 ctx.beginPath()
-
 ctx.moveTo(e.offsetX,e.offsetY)
 
 }
@@ -230,15 +257,50 @@ let text=document.getElementById("textInput").value
 
 ctx.font="26px Helvetica"
 
-ctx.fillText(text,90,150)
+ctx.fillText(text,80,160)
 
 }
+
+function addSticker(sticker){
+
+ctx.font="40px serif"
+
+let x=Math.random()*240
+let y=Math.random()*240
+
+ctx.fillText(sticker,x,y)
+
+}
+
+document.getElementById("upload").addEventListener("change",function(e){
+
+const file=e.target.files[0]
+
+const reader=new FileReader()
+
+reader.onload=function(event){
+
+const img=new Image()
+
+img.onload=function(){
+
+ctx.drawImage(img,60,60,200,200)
+
+}
+
+img.src=event.target.result
+
+}
+
+reader.readAsDataURL(file)
+
+})
 
 function downloadImage(){
 
 let link=document.createElement("a")
 
-link.download="teaful-cup.png"
+link.download="teaful.png"
 
 link.href=canvas.toDataURL()
 
