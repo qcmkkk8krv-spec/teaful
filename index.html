@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 
@@ -5,20 +6,18 @@
 
 <meta charset="utf-8">
 
-<title>Teaful Cup Designer</title>
+<title>Teaful</title>
 
 <style>
 
 body{
-
 margin:0;
-font-family:Arial;
-background:#f6f6f6;
+font-family:Helvetica, Arial, sans-serif;
+background:#f3f1f6;
 text-align:center;
-
 }
 
-/* 启动页 */
+/* 启动页 /
 
 #loading{
 
@@ -27,7 +26,7 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-background:white;
+background:#f3f1f6;
 display:flex;
 flex-direction:column;
 justify-content:center;
@@ -36,42 +35,65 @@ z-index:9999;
 
 }
 
-#cup{
+/ 卡通图 /
 
-width:140px;
-animation:pop 1.5s ease;
+#startup{
+
+width:220px;
+animation:float 2s ease;
 
 }
 
-#brand{
+/ Logo /
 
-font-size:30px;
-margin-top:10px;
+#logo{
+
+margin-top:25px;
+
+}
+
+.logo-text{
+
+font-size:44px;
+letter-spacing:8px;
+font-weight:600;
+
+}
+
+.logo-sub{
+
+font-size:12px;
+letter-spacing:4px;
+margin-top:8px;
+color:#666;
+
+}
+
+/ 动画 /
+
+@keyframes float{
+
+0%{
+transform:translateY(20px);
 opacity:0;
-animation:fade 2s forwards;
-animation-delay:1s;
-
 }
 
-@keyframes pop{
-
-0%{transform:scale(0)}
-
-60%{transform:scale(1.2)}
-
-100%{transform:scale(1)}
+100%{
+transform:translateY(0);
+opacity:1;
+}
 
 }
 
 @keyframes fade{
 
-from{opacity:0}
+0%{opacity:0}
 
-to{opacity:1}
+100%{opacity:1}
 
 }
 
-/* 主页面 */
+/ 主页面 /
 
 #main{
 
@@ -85,6 +107,7 @@ canvas{
 background:white;
 border:2px solid black;
 border-radius:10px;
+
 }
 
 button{
@@ -111,13 +134,19 @@ background:#333;
 
 <body>
 
-<!-- 启动动画 -->
+<!-- 启动页 -->
 
 <div id="loading">
 
-< img src="cup.png" id="cup">
+<img src="startup.png" id="startup">
 
-<div id="brand">Teaful</div>
+<div id="logo">
+
+<div class="logo-text">TEAFUL</div>
+
+<div class="logo-sub">A CUP FULL OF HAPPINESS</div>
+
+</div>
 
 </div>
 
@@ -145,7 +174,7 @@ background:#333;
 
 <script>
 
-/* 启动页3秒 */
+/ 启动页3秒 /
 
 setTimeout(function(){
 
@@ -153,9 +182,9 @@ document.getElementById("loading").style.display="none"
 
 document.getElementById("main").style.display="block"
 
-},2500)
+},3000)
 
-/* 画画 */
+/ 画图 */
 
 const canvas=document.getElementById("canvas")
 
@@ -178,7 +207,6 @@ canvas.onmousemove=function(e){
 if(!drawing)return
 
 ctx.lineWidth=3
-
 ctx.lineCap="round"
 
 ctx.lineTo(e.offsetX,e.offsetY)
@@ -201,9 +229,9 @@ function addText(){
 
 let text=document.getElementById("textInput").value
 
-ctx.font="24px Arial"
+ctx.font="26px Helvetica"
 
-ctx.fillText(text,100,150)
+ctx.fillText(text,90,150)
 
 }
 
