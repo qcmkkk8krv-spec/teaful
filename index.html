@@ -8,8 +8,8 @@
 
 body{
 font-family:Arial;
-background:#f5f5f5;
 margin:0;
+background:#f6f6f6;
 text-align:center;
 }
 
@@ -20,45 +20,58 @@ margin-top:30px;
 
 .subtitle{
 color:#777;
-margin-bottom:30px;
 }
 
 .tabs{
 display:flex;
 justify-content:center;
 gap:40px;
+margin-top:20px;
 font-size:18px;
-margin-bottom:20px;
 }
 
 .tabs span{
-padding:10px;
 cursor:pointer;
+padding:8px;
 }
 
-.tabs .active{
+.active{
 border-bottom:3px solid black;
 font-weight:bold;
 }
 
 .templates{
 display:grid;
-grid-template-columns:repeat(3,200px);
-gap:20px;
+grid-template-columns:repeat(3,180px);
+gap:25px;
 justify-content:center;
-margin-top:30px;
+margin-top:40px;
 }
 
 .template{
 background:white;
-border-radius:10px;
+border-radius:12px;
 padding:20px;
-box-shadow:0 4px 10px rgba(0,0,0,0.08);
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
 cursor:pointer;
 }
 
 .template img{
-width:80px;
+width:70px;
+}
+
+canvas{
+border:2px solid #333;
+border-radius:10px;
+background:white;
+}
+
+.controls{
+margin-top:15px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
 }
 
 button{
@@ -70,24 +83,6 @@ border-radius:6px;
 cursor:pointer;
 }
 
-#canvas{
-border:2px solid #333;
-border-radius:10px;
-background:white;
-}
-
-.controls{
-margin-top:15px;
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-justify-content:center;
-}
-
-#backBtn{
-margin-bottom:20px;
-}
-
 </style>
 </head>
 
@@ -97,8 +92,8 @@ margin-bottom:20px;
 <div class="subtitle">A CUP FULL OF HAPPINESS</div>
 
 <div class="tabs">
-<span id="tab-template" class="active">推荐模板</span>
-<span id="tab-create">灵感创作</span>
+<span id="tabTemplate" class="active">推荐模板</span>
+<span id="tabCreate">灵感创作</span>
 </div>
 
 <!-- 模板页面 -->
@@ -140,7 +135,8 @@ margin-bottom:20px;
 
 <div id="createPage" style="display:none">
 
-<button id="backBtn">← Back</button>
+<br>
+<button onclick="backTemplate()">← Back</button>
 
 <h3>Create Sticker</h3>
 
@@ -166,14 +162,13 @@ Brush
 
 </div>
 
-
 <script>
 
-const tabTemplate = document.getElementById("tab-template")
-const tabCreate = document.getElementById("tab-create")
+const tabTemplate=document.getElementById("tabTemplate")
+const tabCreate=document.getElementById("tabCreate")
 
-const templatePage = document.getElementById("templatePage")
-const createPage = document.getElementById("createPage")
+const templatePage=document.getElementById("templatePage")
+const createPage=document.getElementById("createPage")
 
 tabTemplate.onclick=()=>{
 templatePage.style.display="block"
@@ -195,7 +190,7 @@ function openCreate(){
 tabCreate.click()
 }
 
-document.getElementById("backBtn").onclick=()=>{
+function backTemplate(){
 tabTemplate.click()
 }
 
@@ -207,13 +202,45 @@ let mode="draw"
 
 let brush=document.getElementById("brush")
 
+let stickers=[]
+let selected=null
+
 canvas.onmousedown=(e)=>{
+
+const x=e.offsetX
+const y=e.offsetY
+
+if(mode==="move"){
+
+for(let s of stickers){
+
+if(x>s.x && x<s.x+s.w && y>s.y && y<s.y+s.h){
+selected=s
+return
+}
+
+}
+
+}
+
 drawing=true
 ctx.beginPath()
-ctx.moveTo(e.offsetX,e.offsetY)
+ctx.moveTo(x,y)
+
 }
 
 canvas.onmousemove=(e)=>{
+
+const x=e.offsetX
+const y=e.offsetY
+
+if(selected){
+selected.x=x-selected.w/2
+selected.y=y-selected.h/2
+drawCanvas()
+return
+}
+
 if(!drawing)return
 
 ctx.lineWidth=brush.value
@@ -226,13 +253,48 @@ if(mode==="erase"){
 ctx.globalCompositeOperation="destination-out"
 }
 
-ctx.lineTo(e.offsetX,e.offsetY)
+ctx.lineTo(x,y)
 ctx.stroke()
+
 }
 
 canvas.onmouseup=()=>{
 drawing=false
+selected=null
 saveState()
+}
+
+function drawCanvas(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+for(let s of stickers){
+ctx.drawImage(s.img,s.x,s.y,s.w,s.h)
+}
+
+}
+
+document.getElementById("upload").onchange=(e)=>{
+
+const file=e.target.files[0]
+const img=new Image()
+
+img.src=URL.createObjectURL(file)
+
+img.onload=()=>{
+
+stickers.push({
+img:img,
+x:100,
+y:100,
+w:150,
+h:150
+})
+
+drawCanvas()
+
+}
+
 }
 
 let history=[]
@@ -242,6 +304,7 @@ history.push(canvas.toDataURL())
 }
 
 function undo(){
+
 if(history.length==0)return
 
 let img=new Image()
@@ -251,24 +314,13 @@ img.onload=()=>{
 ctx.clearRect(0,0,canvas.width,canvas.height)
 ctx.drawImage(img,0,0)
 }
+
 }
 
 function clearCanvas(){
+
 ctx.clearRect(0,0,canvas.width,canvas.height)
-}
-
-document.getElementById("upload").onchange=(e)=>{
-
-const file=e.target.files[0]
-
-const img=new Image()
-
-img.src=URL.createObjectURL(file)
-
-img.onload=()=>{
-ctx.drawImage(img,100,100,200,200)
-saveState()
-}
+stickers=[]
 
 }
 
@@ -281,13 +333,14 @@ const win=window.open("")
 win.document.write(`
 <html>
 <body style="display:flex;justify-content:center;align-items:center;height:100vh;">
-< img src="${data}" style="width:80mm">
+< img src="${data}" style="width:90mm">
 <script>
-window.onload=function(){window.print()}
+setTimeout(function(){window.print()},500)
 </script>
 </body>
 </html>
 `)
+
 }
 
 function printTemplate(src){
@@ -297,13 +350,14 @@ const win=window.open("")
 win.document.write(`
 <html>
 <body style="display:flex;justify-content:center;align-items:center;height:100vh;">
-< img src="${src}" style="width:80mm">
+< img src="${src}" style="width:90mm">
 <script>
-window.onload=function(){window.print()}
+setTimeout(function(){window.print()},500)
 </script>
 </body>
 </html>
 `)
+
 }
 
 </script>
