@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="utf-8">
+
 <title>Teaful Studio</title>
 
 <style>
@@ -10,37 +12,15 @@ body{
 margin:0;
 font-family:Helvetica;
 background:#f5f5f5;
+text-align:center;
 }
-
-/* header */
 
 .header{
-text-align:center;
 padding:25px;
-background:white;
 font-size:28px;
 letter-spacing:6px;
-}
-
-/* tabs */
-
-.tabs{
-display:flex;
-justify-content:center;
 background:white;
-border-bottom:1px solid #ddd;
 }
-
-.tab{
-padding:15px 25px;
-cursor:pointer;
-}
-
-.active{
-border-bottom:3px solid black;
-}
-
-/* template grid */
 
 .templates{
 display:grid;
@@ -52,7 +32,7 @@ padding:20px;
 .card{
 background:white;
 height:120px;
-border-radius:12px;
+border-radius:10px;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -60,15 +40,11 @@ cursor:pointer;
 }
 
 .card img{
-max-width:70px;
+max-width:80px;
 }
-
-/* editor */
 
 #editor{
 display:none;
-padding:15px;
-text-align:center;
 }
 
 canvas{
@@ -78,18 +54,16 @@ background:white;
 touch-action:none;
 }
 
-/* toolbar */
-
 .toolbar{
 margin-top:15px;
 display:flex;
-flex-wrap:wrap;
 gap:10px;
 justify-content:center;
+flex-wrap:wrap;
 }
 
 button{
-padding:10px 14px;
+padding:10px 16px;
 border:none;
 background:black;
 color:white;
@@ -98,38 +72,32 @@ cursor:pointer;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="header">TEAFUL</div>
 
-<div class="tabs">
-
-<div class="tab active">Templates</div>
-<div class="tab" onclick="openEditor()">Create</div>
-
-</div>
-
 <div id="templates" class="templates">
 
-<div class="card" onclick="addTemplate('cry.png')">
+<div class="card" onclick="loadTemplate('cry.png')">
 < img src="cry.png">
 </div>
 
-<div class="card" onclick="addTemplate('planet.png')">
+<div class="card" onclick="loadTemplate('planet.png')">
 < img src="planet.png">
 </div>
 
-<div class="card" onclick="addTemplate('party.png')">
+<div class="card" onclick="loadTemplate('party.png')">
 < img src="party.png">
 </div>
 
-<div class="card" onclick="addTemplate('hat.png')">
+<div class="card" onclick="loadTemplate('hat.png')">
 < img src="hat.png">
 </div>
 
-<div class="card" onclick="addTemplate('cake.png')">
+<div class="card" onclick="loadTemplate('cake.png')">
 < img src="cake.png">
 </div>
 
@@ -143,16 +111,10 @@ cursor:pointer;
 
 <div class="toolbar">
 
+<button onclick="mode='draw'">Draw</button>
+<button onclick="mode='move'">Move</button>
 <button onclick="clearCanvas()">Clear</button>
-<button onclick="downloadImage()">Save</button>
-
-</div>
-
-<div class="toolbar">
-
-<button onclick="addSticker('cry.png')">😭</button>
-<button onclick="addSticker('planet.png')">🪐</button>
-<button onclick="addSticker('party.png')">🎉</button>
+<button onclick="saveImage()">Save</button>
 
 </div>
 
@@ -171,6 +133,9 @@ const ctx=canvas.getContext("2d")
 
 let stickers=[]
 let current=null
+let mode="move"
+
+let drawing=false
 
 function openEditor(){
 
@@ -179,17 +144,13 @@ document.getElementById("editor").style.display="block"
 
 }
 
-/* template */
-
-function addTemplate(src){
+function loadTemplate(src){
 
 openEditor()
 
 addSticker(src)
 
 }
-
-/* sticker */
 
 function addSticker(src){
 
@@ -200,13 +161,11 @@ img.src=src
 img.onload=function(){
 
 stickers.push({
-
 img:img,
 x:150,
 y:150,
-w:100,
-h:100
-
+w:120,
+h:120
 })
 
 draw()
@@ -220,14 +179,30 @@ function draw(){
 ctx.clearRect(0,0,canvas.width,canvas.height)
 
 stickers.forEach(s=>{
-
 ctx.drawImage(s.img,s.x,s.y,s.w,s.h)
-
 })
 
 }
 
-/* drag */
+function getPos(e){
+
+const rect=canvas.getBoundingClientRect()
+
+if(e.touches){
+
+return{
+x:e.touches[0].clientX-rect.left,
+y:e.touches[0].clientY-rect.top
+}
+
+}
+
+return{
+x:e.clientX-rect.left,
+y:e.clientY-rect.top
+}
+
+}
 
 canvas.addEventListener("mousedown",start)
 canvas.addEventListener("mousemove",move)
@@ -237,44 +212,23 @@ canvas.addEventListener("touchstart",start)
 canvas.addEventListener("touchmove",move)
 canvas.addEventListener("touchend",end)
 
-function getPos(e){
-
-const rect=canvas.getBoundingClientRect()
-
-if(e.touches){
-
-return{
-
-x:e.touches[0].clientX-rect.left,
-y:e.touches[0].clientY-rect.top
-
-}
-
-}
-
-return{
-
-x:e.clientX-rect.left,
-y:e.clientY-rect.top
-
-}
-
-}
-
 function start(e){
 
 const pos=getPos(e)
 
+if(mode=="draw"){
+
+drawing=true
+ctx.beginPath()
+ctx.moveTo(pos.x,pos.y)
+
+}
+
+if(mode=="move"){
+
 stickers.forEach(s=>{
 
-if(
-
-pos.x>s.x &&
-pos.x<s.x+s.w &&
-pos.y>s.y &&
-pos.y<s.y+s.h
-
-){
+if(pos.x>s.x && pos.x<s.x+s.w && pos.y>s.y && pos.y<s.y+s.h){
 
 current=s
 
@@ -284,26 +238,47 @@ current=s
 
 }
 
-function move(e){
+}
 
-if(!current)return
+function move(e){
 
 const pos=getPos(e)
 
+if(mode=="draw" && drawing){
+
+ctx.lineTo(pos.x,pos.y)
+ctx.stroke()
+
+}
+
+if(mode=="move" && current){
+
 current.x=pos.x-current.w/2
 current.y=pos.y-current.h/2
-
 draw()
+
+}
 
 }
 
 function end(){
 
+drawing=false
 current=null
 
 }
 
-/* upload */
+canvas.addEventListener("wheel",function(e){
+
+if(current){
+
+current.w+=e.deltaY*-0.1
+current.h+=e.deltaY*-0.1
+draw()
+
+}
+
+})
 
 upload.onchange=function(e){
 
@@ -320,13 +295,11 @@ img.src=event.target.result
 img.onload=function(){
 
 stickers.push({
-
 img:img,
-x:100,
-y:100,
+x:120,
+y:120,
 w:150,
 h:150
-
 })
 
 draw()
@@ -339,20 +312,16 @@ reader.readAsDataURL(file)
 
 }
 
-/* clear */
-
 function clearCanvas(){
 
 stickers=[]
-draw()
+ctx.clearRect(0,0,canvas.width,canvas.height)
 
 }
 
-/* save */
+function saveImage(){
 
-function downloadImage(){
-
-let link=document.createElement("a")
+const link=document.createElement("a")
 
 link.download="teaful.png"
 
