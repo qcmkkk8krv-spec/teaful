@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <meta charset="utf-8">
-<title>TEAFUL Studio</title>
+<title>Teaful Studio</title>
 
 <style>
 
@@ -13,12 +15,16 @@ background:#f4f4f4;
 text-align:center;
 }
 
+/* header */
+
 .header{
 padding:25px;
 font-size:28px;
 letter-spacing:6px;
 background:white;
 }
+
+/* template grid */
 
 .templates{
 display:grid;
@@ -30,7 +36,7 @@ padding:20px;
 .card{
 background:white;
 height:120px;
-border-radius:12px;
+border-radius:10px;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -40,6 +46,19 @@ cursor:pointer;
 .card img{
 max-width:80px;
 }
+
+/* create button */
+
+.createBtn{
+margin:20px;
+padding:12px 25px;
+background:black;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+/* editor */
 
 #editor{
 display:none;
@@ -56,9 +75,9 @@ touch-action:none;
 .toolbar{
 margin-top:15px;
 display:flex;
-flex-wrap:wrap;
 gap:10px;
 justify-content:center;
+flex-wrap:wrap;
 }
 
 button{
@@ -71,39 +90,50 @@ cursor:pointer;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="header">TEAFUL</div>
 
+<!-- 模板区 -->
+
 <div id="templates" class="templates">
 
-<div class="card" onclick="addSticker(sticker1)">
-< img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAWCAYAAAB4u5asAAAACXBIWXMAAAsSAAALEgHS3X78AAA...">
+<div class="card" onclick="printSticker('cry.png')">
+< img src="cry.png">
 </div>
 
-<div class="card" onclick="addSticker(sticker2)">
-< img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAWCAYAAAB4u5asAAAACXBIWXMAAAsSAAALEgHS3X78AAA...">
+<div class="card" onclick="printSticker('planet.png')">
+< img src="planet.png">
 </div>
 
-<div class="card" onclick="addSticker(sticker3)">
-< img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAWCAYAAAB4u5asAAAACXBIWXMAAAsSAAALEgHS3X78AAA...">
+<div class="card" onclick="printSticker('party.png')">
+< img src="party.png">
 </div>
 
-<div class="card" onclick="addSticker(sticker4)">
-< img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAWCAYAAAB4u5asAAAACXBIWXMAAAsSAAALEgHS3X78AAA...">
+<div class="card" onclick="printSticker('hat.png')">
+< img src="hat.png">
 </div>
 
-<div class="card" onclick="addSticker(sticker5)">
-< img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAWCAYAAAB4u5asAAAACXBIWXMAAAsSAAALEgHS3X78AAA...">
+<div class="card" onclick="printSticker('cake.png')">
+< img src="cake.png">
 </div>
 
 </div>
+
+<div class="createBtn" onclick="openCreate()">
+
+Create Your Sticker
+
+</div>
+
+<!-- 编辑器 -->
 
 <div id="editor">
 
-<h2>Create Your Cup</h2>
+<h2>Create</h2>
 
 <canvas id="canvas" width="420" height="420"></canvas>
 
@@ -126,12 +156,6 @@ cursor:pointer;
 
 <script>
 
-const sticker1="data:image/png;base64,..."
-const sticker2="data:image/png;base64,..."
-const sticker3="data:image/png;base64,..."
-const sticker4="data:image/png;base64,..."
-const sticker5="data:image/png;base64,..."
-
 const canvas=document.getElementById("canvas")
 const ctx=canvas.getContext("2d")
 
@@ -140,56 +164,47 @@ let current=null
 let drawing=false
 let mode="move"
 
-function openEditor(){
+/* 模板打印 */
+
+function printSticker(img){
+
+const image=new Image()
+
+image.src=img
+
+image.onload=function(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height)
+
+ctx.drawImage(image,100,100,200,200)
+
+}
+
+}
+
+/* 进入创作 */
+
+function openCreate(){
 
 document.getElementById("templates").style.display="none"
+document.querySelector(".createBtn").style.display="none"
 document.getElementById("editor").style.display="block"
 
 }
 
-function addSticker(src){
-
-openEditor()
-
-const img=new Image()
-
-img.src=src
-
-img.onload=function(){
-
-stickers.push({
-img:img,
-x:150,
-y:150,
-w:120,
-h:120
-})
-
-draw()
-
-}
-
-}
-
-function draw(){
-
-ctx.clearRect(0,0,canvas.width,canvas.height)
-
-stickers.forEach(s=>{
-ctx.drawImage(s.img,s.x,s.y,s.w,s.h)
-})
-
-}
+/* 画画 + 拖动 */
 
 function getPos(e){
 
 const rect=canvas.getBoundingClientRect()
 
 if(e.touches){
+
 return{
 x:e.touches[0].clientX-rect.left,
 y:e.touches[0].clientY-rect.top
 }
+
 }
 
 return{
@@ -219,16 +234,6 @@ ctx.moveTo(pos.x,pos.y)
 
 }
 
-if(mode==="move"){
-
-stickers.forEach(s=>{
-if(pos.x>s.x&&pos.x<s.x+s.w&&pos.y>s.y&&pos.y<s.y+s.h){
-current=s
-}
-})
-
-}
-
 }
 
 function move(e){
@@ -242,34 +247,15 @@ ctx.stroke()
 
 }
 
-if(mode==="move" && current){
-
-current.x=pos.x-current.w/2
-current.y=pos.y-current.h/2
-draw()
-
-}
-
 }
 
 function end(){
 
 drawing=false
-current=null
 
 }
 
-canvas.addEventListener("wheel",function(e){
-
-if(current){
-
-current.w+=e.deltaY*-0.1
-current.h+=e.deltaY*-0.1
-draw()
-
-}
-
-})
+/* 上传照片 */
 
 upload.onchange=function(e){
 
@@ -285,15 +271,7 @@ img.src=event.target.result
 
 img.onload=function(){
 
-stickers.push({
-img:img,
-x:100,
-y:100,
-w:150,
-h:150
-})
-
-draw()
+ctx.drawImage(img,120,120,180,180)
 
 }
 
@@ -303,19 +281,24 @@ reader.readAsDataURL(file)
 
 }
 
+/* 清空 */
+
 function clearCanvas(){
 
-stickers=[]
 ctx.clearRect(0,0,canvas.width,canvas.height)
 
 }
+
+/* 保存 */
 
 function saveImage(){
 
 const link=document.createElement("a")
 
 link.download="teaful.png"
+
 link.href=canvas.toDataURL()
+
 link.click()
 
 }
@@ -323,4 +306,5 @@ link.click()
 </script>
 
 </body>
+
 </html>
