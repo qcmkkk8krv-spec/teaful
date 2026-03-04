@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta charset="utf-8">
-
-<title>Teaful Studio</title>
+<title>TEAFUL Studio</title>
 
 <style>
 
 body{
 margin:0;
 font-family:Helvetica;
-background:#f5f5f5;
+background:#f4f4f4;
 text-align:center;
 }
 
@@ -32,7 +30,7 @@ padding:20px;
 .card{
 background:white;
 height:120px;
-border-radius:10px;
+border-radius:12px;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -45,6 +43,7 @@ max-width:80px;
 
 #editor{
 display:none;
+padding:20px;
 }
 
 canvas{
@@ -57,9 +56,9 @@ touch-action:none;
 .toolbar{
 margin-top:15px;
 display:flex;
+flex-wrap:wrap;
 gap:10px;
 justify-content:center;
-flex-wrap:wrap;
 }
 
 button{
@@ -72,7 +71,6 @@ cursor:pointer;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -81,24 +79,24 @@ cursor:pointer;
 
 <div id="templates" class="templates">
 
-<div class="card" onclick="loadTemplate('cry.png')">
-< img src="cry.png">
+<div class="card" onclick="addSticker(sticker1)">
+< img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAWCAYAAAB4u5asAAAACXBIWXMAAAsSAAALEgHS3X78AAA...">
 </div>
 
-<div class="card" onclick="loadTemplate('planet.png')">
-< img src="planet.png">
+<div class="card" onclick="addSticker(sticker2)">
+< img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAWCAYAAAB4u5asAAAACXBIWXMAAAsSAAALEgHS3X78AAA...">
 </div>
 
-<div class="card" onclick="loadTemplate('party.png')">
-< img src="party.png">
+<div class="card" onclick="addSticker(sticker3)">
+< img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAWCAYAAAB4u5asAAAACXBIWXMAAAsSAAALEgHS3X78AAA...">
 </div>
 
-<div class="card" onclick="loadTemplate('hat.png')">
-< img src="hat.png">
+<div class="card" onclick="addSticker(sticker4)">
+< img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAWCAYAAAB4u5asAAAACXBIWXMAAAsSAAALEgHS3X78AAA...">
 </div>
 
-<div class="card" onclick="loadTemplate('cake.png')">
-< img src="cake.png">
+<div class="card" onclick="addSticker(sticker5)">
+< img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAWCAYAAAB4u5asAAAACXBIWXMAAAsSAAALEgHS3X78AAA...">
 </div>
 
 </div>
@@ -128,14 +126,19 @@ cursor:pointer;
 
 <script>
 
+const sticker1="data:image/png;base64,..."
+const sticker2="data:image/png;base64,..."
+const sticker3="data:image/png;base64,..."
+const sticker4="data:image/png;base64,..."
+const sticker5="data:image/png;base64,..."
+
 const canvas=document.getElementById("canvas")
 const ctx=canvas.getContext("2d")
 
 let stickers=[]
 let current=null
-let mode="move"
-
 let drawing=false
+let mode="move"
 
 function openEditor(){
 
@@ -144,15 +147,9 @@ document.getElementById("editor").style.display="block"
 
 }
 
-function loadTemplate(src){
+function addSticker(src){
 
 openEditor()
-
-addSticker(src)
-
-}
-
-function addSticker(src){
 
 const img=new Image()
 
@@ -189,12 +186,10 @@ function getPos(e){
 const rect=canvas.getBoundingClientRect()
 
 if(e.touches){
-
 return{
 x:e.touches[0].clientX-rect.left,
 y:e.touches[0].clientY-rect.top
 }
-
 }
 
 return{
@@ -216,7 +211,7 @@ function start(e){
 
 const pos=getPos(e)
 
-if(mode=="draw"){
+if(mode==="draw"){
 
 drawing=true
 ctx.beginPath()
@@ -224,16 +219,12 @@ ctx.moveTo(pos.x,pos.y)
 
 }
 
-if(mode=="move"){
+if(mode==="move"){
 
 stickers.forEach(s=>{
-
-if(pos.x>s.x && pos.x<s.x+s.w && pos.y>s.y && pos.y<s.y+s.h){
-
+if(pos.x>s.x&&pos.x<s.x+s.w&&pos.y>s.y&&pos.y<s.y+s.h){
 current=s
-
 }
-
 })
 
 }
@@ -244,14 +235,14 @@ function move(e){
 
 const pos=getPos(e)
 
-if(mode=="draw" && drawing){
+if(mode==="draw" && drawing){
 
 ctx.lineTo(pos.x,pos.y)
 ctx.stroke()
 
 }
 
-if(mode=="move" && current){
+if(mode==="move" && current){
 
 current.x=pos.x-current.w/2
 current.y=pos.y-current.h/2
@@ -296,8 +287,8 @@ img.onload=function(){
 
 stickers.push({
 img:img,
-x:120,
-y:120,
+x:100,
+y:100,
 w:150,
 h:150
 })
@@ -324,9 +315,7 @@ function saveImage(){
 const link=document.createElement("a")
 
 link.download="teaful.png"
-
 link.href=canvas.toDataURL()
-
 link.click()
 
 }
@@ -334,5 +323,4 @@ link.click()
 </script>
 
 </body>
-
 </html>
