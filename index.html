@@ -11,71 +11,38 @@ body{
 margin:0;
 font-family:Helvetica;
 background:#f6f6f6;
+text-align:center;
 }
 
-/* 顶部 */
+/* header */
 
 .header{
-text-align:center;
 padding:25px;
-background:white;
 font-size:28px;
 letter-spacing:6px;
-}
-
-/* tabs */
-
-.tabs{
-display:flex;
-justify-content:center;
 background:white;
-border-bottom:1px solid #ddd;
 }
 
-.tab{
-padding:14px 25px;
-cursor:pointer;
-}
-
-.active{
-border-bottom:3px solid black;
-}
-
-/* 分类 */
-
-.category{
-display:flex;
-gap:10px;
-padding:15px;
-}
-
-.tag{
-background:#eee;
-padding:8px 15px;
-border-radius:20px;
-font-size:13px;
-}
-
-/* 模板 */
+/* template */
 
 .templates{
 display:grid;
 grid-template-columns:repeat(2,1fr);
 gap:15px;
-padding:15px;
+padding:20px;
 }
 
 .card{
 background:white;
-height:140px;
+height:120px;
 border-radius:12px;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:14px;
+cursor:pointer;
 }
 
-/* 创建按钮 */
+/* create */
 
 .create{
 position:fixed;
@@ -84,26 +51,24 @@ left:50%;
 transform:translateX(-50%);
 background:black;
 color:white;
-padding:14px 28px;
+padding:14px 30px;
 border-radius:30px;
 cursor:pointer;
 }
 
-/* 编辑器 */
+/* editor */
 
 #editor{
 display:none;
 padding:20px;
-text-align:center;
 }
 
 canvas{
 border:2px solid black;
 border-radius:10px;
 background:white;
+touch-action:none;
 }
-
-/* 工具栏 */
 
 .toolbar{
 margin-top:15px;
@@ -122,16 +87,6 @@ border-radius:6px;
 cursor:pointer;
 }
 
-button:hover{
-background:#333;
-}
-
-.sticker{
-font-size:22px;
-background:white;
-border:1px solid #ccc;
-}
-
 </style>
 </head>
 
@@ -139,28 +94,12 @@ border:1px solid #ccc;
 
 <div class="header">TEAFUL</div>
 
-<div class="tabs">
+<div id="templates" class="templates">
 
-<div class="tab active">Templates</div>
-<div class="tab">Create</div>
-
-</div>
-
-<div class="category">
-
-<div class="tag">Love</div>
-<div class="tag">Birthday</div>
-<div class="tag">Friends</div>
-<div class="tag">Daily</div>
-
-</div>
-
-<div class="templates">
-
-<div class="card">Love Cup</div>
-<div class="card">Birthday Cup</div>
-<div class="card">Best Friend</div>
-<div class="card">Lucky Day</div>
+<div class="card" onclick="openEditor('Love')">Love Cup</div>
+<div class="card" onclick="openEditor('Birthday')">Birthday Cup</div>
+<div class="card" onclick="openEditor('Friend')">Best Friend</div>
+<div class="card" onclick="openEditor('Lucky')">Lucky Day</div>
 
 </div>
 
@@ -180,7 +119,7 @@ Create Sticker
 
 <input id="textInput" placeholder="Text">
 
-<button onclick="addText()">Text</button>
+<button onclick="addText()">Add Text</button>
 
 <button onclick="clearCanvas()">Clear</button>
 
@@ -190,29 +129,31 @@ Create Sticker
 
 <div class="toolbar">
 
-<button class="sticker" onclick="addSticker('⭐')">⭐</button>
-<button class="sticker" onclick="addSticker('❤️')">❤️</button>
-<button class="sticker" onclick="addSticker('🍵')">🍵</button>
-<button class="sticker" onclick="addSticker('🎉')">🎉</button>
-<button class="sticker" onclick="addSticker('😊')">😊</button>
+<button onclick="addSticker('⭐')">⭐</button>
+<button onclick="addSticker('❤️')">❤️</button>
+<button onclick="addSticker('🍵')">🍵</button>
+<button onclick="addSticker('🎉')">🎉</button>
 
 </div>
-
-<div class="toolbar">
 
 <input type="file" id="upload">
 
 </div>
 
-</div>
-
 <script>
 
-function openEditor(){
+function openEditor(type){
 
-document.querySelector(".templates").style.display="none"
+document.getElementById("templates").style.display="none"
 document.querySelector(".create").style.display="none"
 document.getElementById("editor").style.display="block"
+
+if(type=="Birthday"){
+
+ctx.font="24px Helvetica"
+ctx.fillText("Happy Birthday",60,160)
+
+}
 
 }
 
@@ -223,25 +164,64 @@ const ctx=canvas.getContext("2d")
 
 let drawing=false
 
-canvas.onmousedown=()=>drawing=true
+function getPos(e){
 
-canvas.onmouseup=()=>{
+const rect=canvas.getBoundingClientRect()
+
+if(e.touches){
+
+return{
+x:e.touches[0].clientX-rect.left,
+y:e.touches[0].clientY-rect.top
+}
+
+}
+
+return{
+x:e.clientX-rect.left,
+y:e.clientY-rect.top
+}
+
+}
+
+/* mouse */
+
+canvas.addEventListener("mousedown",start)
+canvas.addEventListener("mouseup",stop)
+canvas.addEventListener("mousemove",draw)
+
+/* touch */
+
+canvas.addEventListener("touchstart",start)
+canvas.addEventListener("touchend",stop)
+canvas.addEventListener("touchmove",draw)
+
+function start(e){
+drawing=true
+draw(e)
+}
+
+function stop(){
 drawing=false
 ctx.beginPath()
 }
 
-canvas.onmousemove=function(e){
+function draw(e){
 
 if(!drawing)return
+
+e.preventDefault()
+
+const pos=getPos(e)
 
 ctx.lineWidth=3
 ctx.lineCap="round"
 
-ctx.lineTo(e.offsetX,e.offsetY)
+ctx.lineTo(pos.x,pos.y)
 ctx.stroke()
 
 ctx.beginPath()
-ctx.moveTo(e.offsetX,e.offsetY)
+ctx.moveTo(pos.x,pos.y)
 
 }
 
@@ -257,18 +237,18 @@ let text=document.getElementById("textInput").value
 
 ctx.font="26px Helvetica"
 
-ctx.fillText(text,80,160)
+ctx.fillText(text,80,150)
 
 }
 
-function addSticker(sticker){
+function addSticker(s){
 
 ctx.font="40px serif"
 
 let x=Math.random()*240
 let y=Math.random()*240
 
-ctx.fillText(sticker,x,y)
+ctx.fillText(s,x,y)
 
 }
 
