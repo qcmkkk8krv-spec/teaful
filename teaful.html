@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Teaful Cup Design</title>
+
+<style>
+
+body{
+font-family:Arial;
+text-align:center;
+background:#f8f8f8;
+}
+
+h2{
+margin-top:20px;
+}
+
+canvas{
+background:white;
+border:2px solid black;
+touch-action:none;
+}
+
+input{
+padding:8px;
+margin:10px;
+width:200px;
+}
+
+button{
+padding:10px 20px;
+margin:5px;
+font-size:16px;
+border:none;
+background:black;
+color:white;
+border-radius:5px;
+}
+
+button:hover{
+background:#444;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Design Your Teaful Cup</h2>
+
+<canvas id="canvas" width="300" height="300"></canvas>
+
+<br>
+
+<input id="textInput" placeholder="Type text">
+
+<br>
+
+<button onclick="addText()">Add Text</button>
+<button onclick="clearCanvas()">Clear</button>
+<button onclick="downloadImage()">Save Sticker</button>
+
+<script>
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let drawing=false;
+
+function getPos(e){
+
+const rect=canvas.getBoundingClientRect();
+
+if(e.touches){
+return{
+x:e.touches[0].clientX-rect.left,
+y:e.touches[0].clientY-rect.top
+}
+}
+
+return{
+x:e.clientX-rect.left,
+y:e.clientY-rect.top
+}
+
+}
+
+canvas.addEventListener("mousedown",start);
+canvas.addEventListener("mouseup",stop);
+canvas.addEventListener("mousemove",draw);
+
+canvas.addEventListener("touchstart",start);
+canvas.addEventListener("touchend",stop);
+canvas.addEventListener("touchmove",draw);
+
+function start(e){
+drawing=true
+draw(e)
+}
+
+function stop(){
+drawing=false
+ctx.beginPath()
+}
+
+function draw(e){
+
+if(!drawing) return
+
+e.preventDefault()
+
+const pos=getPos(e)
+
+ctx.lineWidth=3
+ctx.lineCap="round"
+
+ctx.lineTo(pos.x,pos.y)
+ctx.stroke()
+
+ctx.beginPath()
+ctx.moveTo(pos.x,pos.y)
+
+}
+
+function clearCanvas(){
+ctx.clearRect(0,0,canvas.width,canvas.height)
+}
+
+function addText(){
+
+let text=document.getElementById("textInput").value
+
+ctx.font="20px Arial"
+ctx.fillStyle="black"
+ctx.fillText(text,80,150)
+
+}
+
+function downloadImage(){
+
+let link=document.createElement("a")
+
+link.download="teaful-cup.png"
+
+link.href=canvas.toDataURL()
+
+link.click()
+
+}
+
+</script>
+
+</body>
+</html>
