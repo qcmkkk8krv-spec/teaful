@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>TEAFUL Studio</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
 
 <style>
 
 body{
 margin:0;
 font-family:Arial;
-background:#f6f6f6;
+background:#f4f4f4;
 text-align:center;
 }
 
@@ -19,357 +26,405 @@ margin-top:30px;
 }
 
 .subtitle{
-color:#777;
+color:#666;
 margin-bottom:20px;
 }
 
 .tabs{
-display:flex;
-justify-content:center;
-gap:40px;
-font-size:18px;
-margin-top:20px;
+margin-top:10px;
 }
 
 .tabs span{
+margin:0 20px;
 cursor:pointer;
-padding:8px;
+font-weight:bold;
+padding-bottom:5px;
 }
 
 .active{
-border-bottom:3px solid black;
-font-weight:bold;
+border-bottom:2px solid black;
 }
 
 .templates{
 display:grid;
-grid-template-columns:repeat(3,170px);
+grid-template-columns:repeat(3,100px);
 gap:20px;
 justify-content:center;
-margin-top:40px;
+margin-top:30px;
 }
 
 .template{
 background:white;
+padding:10px;
 border-radius:12px;
-padding:20px;
-box-shadow:0 4px 12px rgba(0,0,0,0.1);
-cursor:pointer;
-}
-
-.template img{
-width:70px;
-}
-
-button{
-background:black;
-color:white;
-border:none;
-padding:8px 14px;
-border-radius:6px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
 cursor:pointer;
 }
 
 canvas{
 border:2px solid #333;
-border-radius:10px;
 background:white;
 }
 
 .controls{
 margin-top:15px;
+}
+
+button{
+margin:4px;
+padding:8px 12px;
+border:none;
+background:black;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+input{
+margin-top:8px;
+}
+
+#loader{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:white;
 display:flex;
-flex-wrap:wrap;
-gap:10px;
+flex-direction:column;
+align-items:center;
 justify-content:center;
+z-index:9999;
+}
+
+#lottie{
+width:160px;
+height:160px;
 }
 
 </style>
 
 </head>
 
+
 <body>
 
-<h1>TEAFUL</h1>
-<div class="subtitle">A CUP FULL OF HAPPINESS</div>
 
-<div class="tabs">
-<span id="tabTemplate" class="active">推荐模板</span>
-<span id="tabCreate">灵感创作</span>
+<div id="loader">
+
+<div id="lottie"></div>
+
+<h1>TEAFUL</h1>
+
+<p class="subtitle">
+
+Full of tea<br>
+Full of good<br>
+Full of you
+
+</p >
+
 </div>
 
-<!-- 模板页 -->
+
+
+<h1>TEAFUL</h1>
+
+<div class="subtitle">
+
+Full of tea · Full of good · Full of you
+
+</div>
+
+
+<div class="tabs">
+
+<span id="tabTemplate" class="active">Templates</span>
+
+<span id="tabCreate">Create</span>
+
+</div>
+
+
 
 <div id="templatePage">
 
 <div class="templates">
 
-<div class="template" onclick="printTemplate('cry.png')">
-<img src="cry.png">
+<div class="template" onclick="addSticker('cry.png')">
+<img src="cry.png" width="70">
 </div>
 
-<div class="template" onclick="printTemplate('planet.png')">
-<img src="planet.png">
+<div class="template" onclick="addSticker('planet.png')">
+<img src="planet.png" width="70">
 </div>
 
-<div class="template" onclick="printTemplate('party.png')">
-<img src="party.png">
+<div class="template" onclick="addSticker('party.png')">
+<img src="party.png" width="70">
 </div>
 
-<div class="template" onclick="printTemplate('hat.png')">
-<img src="hat.png">
+<div class="template" onclick="addSticker('hat.png')">
+<img src="hat.png" width="70">
 </div>
 
-<div class="template" onclick="printTemplate('cake.png')">
-<img src="cake.png">
+<div class="template" onclick="addSticker('cake.png')">
+<img src="cake.png" width="70">
 </div>
 
 </div>
 
-<br><br>
+<br>
 
 <button onclick="openCreate()">Create Your Sticker</button>
 
 </div>
 
-<!-- 创作页 -->
+
 
 <div id="createPage" style="display:none">
 
 <br>
 
-<button onclick="backTemplate()">← Back</button>
+<button onclick="back()">← Back</button>
 
-<h3>Create Sticker</h3>
+<h3>Sticker Studio</h3>
 
-<canvas id="canvas" width="420" height="420"></canvas>
+<canvas id="canvas" width="350" height="350"></canvas>
+
 
 <div class="controls">
 
-<button onclick="mode='draw'">Draw</button>
-<button onclick="mode='erase'">Eraser</button>
-<button onclick="mode='move'">Move</button>
-<button onclick="undo()">Undo</button>
-<button onclick="clearCanvas()">Clear</button>
-<button onclick="printCanvas()">Print</button>
+<button onclick="enableDraw()">✏ Draw</button>
 
-<input type="file" id="upload">
+<button onclick="enableErase()">🧽 Erase</button>
+
+<button onclick="canvas.isDrawingMode=false">✋ Move</button>
+
+<button onclick="undo()">Undo</button>
+
+<button onclick="clearCanvas()">Clear</button>
+
+<button onclick="printSticker()">Print</button>
 
 </div>
+
 
 <br>
 
-Brush
-<input type="range" id="brush" min="1" max="30" value="5">
+<input type="file" id="upload">
+
+
+<br><br>
+
+<input id="textInput" placeholder="Type text or emoji">
+
+<button onclick="addText()">Add Text</button>
 
 </div>
 
+
+
 <script>
 
-const tabTemplate=document.getElementById("tabTemplate")
-const tabCreate=document.getElementById("tabCreate")
 
-const templatePage=document.getElementById("templatePage")
-const createPage=document.getElementById("createPage")
 
-tabTemplate.onclick=()=>{
-templatePage.style.display="block"
-createPage.style.display="none"
+var animation=lottie.loadAnimation({
 
-tabTemplate.classList.add("active")
-tabCreate.classList.remove("active")
-}
+container:document.getElementById("lottie"),
 
-tabCreate.onclick=()=>{
-templatePage.style.display="none"
-createPage.style.display="block"
+renderer:"svg",
 
-tabCreate.classList.add("active")
-tabTemplate.classList.remove("active")
-}
+loop:true,
 
-function openCreate(){
-tabCreate.click()
-}
+autoplay:true,
 
-function backTemplate(){
-tabTemplate.click()
-}
+path:"tea-loading.json"
 
-const canvas=document.getElementById("canvas")
-const ctx=canvas.getContext("2d")
+});
 
-let drawing=false
-let mode="draw"
 
-let brush=document.getElementById("brush")
 
-let stickers=[]
-let selected=null
+window.onload=function(){
 
-canvas.onmousedown=(e)=>{
+setTimeout(()=>{
 
-const x=e.offsetX
-const y=e.offsetY
+document.getElementById("loader").style.display="none"
 
-if(mode==="move"){
-
-for(let s of stickers){
-
-if(x>s.x && x<s.x+s.w && y>s.y && y<s.y+s.h){
-selected=s
-return
-}
+},1500)
 
 }
 
-}
 
-drawing=true
-ctx.beginPath()
-ctx.moveTo(x,y)
 
-}
+var canvas=new fabric.Canvas("canvas")
 
-canvas.onmousemove=(e)=>{
+var history=[]
 
-const x=e.offsetX
-const y=e.offsetY
 
-if(selected){
-
-selected.x=x-selected.w/2
-selected.y=y-selected.h/2
-drawCanvas()
-return
-
-}
-
-if(!drawing)return
-
-ctx.lineWidth=brush.value
-
-if(mode==="draw"){
-ctx.globalCompositeOperation="source-over"
-}
-
-if(mode==="erase"){
-ctx.globalCompositeOperation="destination-out"
-}
-
-ctx.lineTo(x,y)
-ctx.stroke()
-
-}
-
-canvas.onmouseup=()=>{
-drawing=false
-selected=null
-saveState()
-}
-
-function drawCanvas(){
-
-ctx.clearRect(0,0,canvas.width,canvas.height)
-
-for(let s of stickers){
-ctx.drawImage(s.img,s.x,s.y,s.w,s.h)
-}
-
-}
-
-document.getElementById("upload").onchange=(e)=>{
-
-const file=e.target.files[0]
-const img=new Image()
-
-img.src=URL.createObjectURL(file)
-
-img.onload=()=>{
-
-stickers.push({
-img:img,
-x:120,
-y:120,
-w:160,
-h:160
-})
-
-drawCanvas()
-
-}
-
-}
-
-let history=[]
 
 function saveState(){
-history.push(canvas.toDataURL())
+
+history.push(JSON.stringify(canvas))
+
 }
+
+
+
+canvas.on("object:added",saveState)
+
+canvas.on("object:modified",saveState)
+
+
 
 function undo(){
 
-if(history.length==0)return
+if(history.length>1){
 
-let img=new Image()
-img.src=history.pop()
+history.pop()
 
-img.onload=()=>{
-ctx.clearRect(0,0,canvas.width,canvas.height)
-ctx.drawImage(img,0,0)
-}
+canvas.loadFromJSON(history[history.length-1],canvas.renderAll.bind(canvas))
 
 }
+
+}
+
+
 
 function clearCanvas(){
-ctx.clearRect(0,0,canvas.width,canvas.height)
-stickers=[]
-}
 
-function printCanvas(){
-
-const data=canvas.toDataURL("image/png")
-
-const win=window.open("")
-
-win.document.write(`
-<html>
-<body style="display:flex;justify-content:center;align-items:center;height:100vh;">
-< img src="${data}" style="width:90mm">
-</body>
-</html>
-`)
-
-win.document.close()
-
-setTimeout(()=>{
-win.print()
-},500)
+canvas.clear()
 
 }
 
-function printTemplate(src){
 
-const win=window.open("")
 
-win.document.write(`
-<html>
-<body style="display:flex;justify-content:center;align-items:center;height:100vh;">
-< img src="${src}" style="width:90mm">
-</body>
-</html>
-`)
+function addSticker(src){
 
-win.document.close()
+fabric.Image.fromURL(src,function(img){
 
-setTimeout(()=>{
-win.print()
-},500)
+img.scaleToWidth(120)
+
+canvas.add(img)
+
+})
 
 }
+
+
+
+document.getElementById("upload").onchange=function(e){
+
+var reader=new FileReader()
+
+reader.onload=function(f){
+
+fabric.Image.fromURL(f.target.result,function(img){
+
+img.scaleToWidth(200)
+
+canvas.add(img)
+
+})
+
+}
+
+reader.readAsDataURL(e.target.files[0])
+
+}
+
+
+
+function addText(){
+
+var text=document.getElementById("textInput").value
+
+var t=new fabric.Text(text,{
+
+left:120,
+
+top:120,
+
+fontSize:30
+
+})
+
+canvas.add(t)
+
+}
+
+
+
+function enableDraw(){
+
+canvas.isDrawingMode=true
+
+canvas.freeDrawingBrush.width=3
+
+}
+
+
+
+function enableErase(){
+
+canvas.isDrawingMode=true
+
+canvas.freeDrawingBrush.width=20
+
+}
+
+
+
+function printSticker(){
+
+var data=canvas.toDataURL({
+
+format:"png",
+
+multiplier:3
+
+})
+
+var w=window.open()
+
+w.document.write("< img src='"+data+"' style='width:90mm'>")
+
+w.print()
+
+}
+
+
+
+function openCreate(){
+
+document.getElementById("templatePage").style.display="none"
+
+document.getElementById("createPage").style.display="block"
+
+document.getElementById("tabTemplate").classList.remove("active")
+
+document.getElementById("tabCreate").classList.add("active")
+
+}
+
+
+
+function back(){
+
+document.getElementById("templatePage").style.display="block"
+
+document.getElementById("createPage").style.display="none"
+
+document.getElementById("tabTemplate").classList.add("active")
+
+document.getElementById("tabCreate").classList.remove("active")
+
+}
+
+
 
 </script>
 
+
 </body>
 </html>
-
